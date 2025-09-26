@@ -24,38 +24,32 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <Border Grid.Column="0" Stroke="#C49B33" StrokeThickness="4" Padding="10" Margin="10" HorizontalOptions="Center">
-            <VerticalStackLayout>
-                <SearchBar Placeholder="Zoek in boodschappenlijst..."
-                           SearchCommand="{Binding ListSearchCommand}"
-                           SearchCommandParameter="{Binding Text, Source={RelativeSource Self}}" />
-                <CollectionView ItemsSource="{Binding FilteredGroceryListItems}" Margin="20" HorizontalOptions="Center"
-                                EmptyView="De boodschappenlijst is nog leeg. Voeg eerst boodschappen toe!">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
-                    </CollectionView.ItemsLayout>
+            <CollectionView ItemsSource="{Binding MyGroceryListItems}" Margin="20" HorizontalOptions="Center" EmptyView="De boodschappenlijst is nog leeg. Voeg eerst boodschappen toe!">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                </CollectionView.ItemsLayout>
 
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="m:GroceryListItem">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="4*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="20"/>
-                                    <ColumnDefinition Width="20"/>
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Text="{Binding Product.Name}" VerticalOptions="Center"/>
-                                <Label Grid.Column="1" Text="{Binding Amount}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
-                                <Grid Grid.Column="2">
-                                    <Image Source="plus.png" WidthRequest="15" HeightRequest="15"/>
-                                </Grid>
-                                <Grid Grid.Column="3">
-                                    <Image Source="min.png" WidthRequest="15" HeightRequest="15"/>
-                                </Grid>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="m:GroceryListItem">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="20"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Text="{Binding Product.Name}" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="{Binding Amount}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
+                            <Grid Grid.Column="2">
+                                <Image Source="plus.png" WidthRequest="15" HeightRequest="15"/>
                             </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </VerticalStackLayout>
+                            <Grid Grid.Column="3">
+                                <Image Source="min.png" WidthRequest="15" HeightRequest="15"/>
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </Border>
 
         <Border Grid.Row="1" Grid.Column="1" Stroke="#C49B33" StrokeThickness="4" Padding="5" Margin="5" HorizontalOptions="Center">
