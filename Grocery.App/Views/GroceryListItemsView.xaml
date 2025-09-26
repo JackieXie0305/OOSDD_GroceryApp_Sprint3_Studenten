@@ -54,7 +54,10 @@
 
         <Border Grid.Row="1" Grid.Column="1" Stroke="#C49B33" StrokeThickness="4" Padding="5" Margin="5" HorizontalOptions="Center">
             <StackLayout>
-                <CollectionView ItemsSource="{Binding AvailableProducts}" Margin="5" WidthRequest="300" HorizontalOptions="Start"
+                <SearchBar Placeholder="Zoek product..."
+                           SearchCommand="{Binding SearchCommand}"
+                           SearchCommandParameter="{Binding Text, Source={RelativeSource Self}}" />
+                <CollectionView ItemsSource="{Binding FilteredProducts}" Margin="5" WidthRequest="300" HorizontalOptions="Start"
                     SelectionMode="Single"
                     SelectionChangedCommand="{Binding AddProductCommand}"
                     SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}">
