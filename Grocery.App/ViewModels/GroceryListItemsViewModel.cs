@@ -30,6 +30,12 @@ namespace Grocery.App.ViewModels
         GroceryList groceryList = new(0, "None", DateOnly.MinValue, "", 0);
         [ObservableProperty]
         string myMessage;
+        [ObservableProperty]
+        string listSearchTerm;
+
+        public ObservableCollection<GroceryListItem> FilteredGroceryListItems { get; set; } = [];
+
+        public IRelayCommand ListSearchCommand { get; }
 
         public GroceryListItemsViewModel(IGroceryListItemsService groceryListItemsService, IProductService productService, IFileSaverService fileSaverService)
         {
@@ -37,9 +43,27 @@ namespace Grocery.App.ViewModels
             _productService = productService;
             _fileSaverService = fileSaverService;
 
-            SearchCommand = new RelayCommand<string>(OnSearch);
-
             Load(groceryList.Id);
+        }
+
+        private void OnListSearch(string searchText)
+        {
+            ListSearchTerm = searchText;
+            FilterGroceryListItems();
+        }
+
+        private void FilterGroceryListItems()
+        {
+            FilteredGroceryListItems.Clear();
+            var filtered = string.IsNullOrWhiteSpace(ListSearchTerm)
+                ? MyGroceryListItems
+                : new ObservableCollection<GroceryListItem>(
+                    MyGroceryListItems.Where(item =>
+                        item.Product.Name.Contains(ListSearchTerm, StringComparison.OrdinalIgnoreCase))
+                  );
+
+            foreach (var item in filtered)
+                FilteredGroceryListItems.Add(item);
         }
 
         private void Load(int id)
@@ -48,6 +72,7 @@ namespace Grocery.App.ViewModels
             foreach (var item in _groceryListItemsService.GetAllOnGroceryListId(id))
                 MyGroceryListItems.Add(item);
             GetAvailableProducts();
+            FilterGroceryListItems(); // Filter direct na laden
         }
 
         private void GetAvailableProducts()
