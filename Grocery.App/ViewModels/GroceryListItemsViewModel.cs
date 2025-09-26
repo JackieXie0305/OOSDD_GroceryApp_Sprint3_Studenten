@@ -43,6 +43,8 @@ namespace Grocery.App.ViewModels
             _productService = productService;
             _fileSaverService = fileSaverService;
 
+            ListSearchCommand = new RelayCommand<string>(OnListSearch);
+
             Load(groceryList.Id);
         }
 
