@@ -15,9 +15,16 @@ namespace Grocery.App.ViewModels
         private readonly IGroceryListItemsService _groceryListItemsService;
         private readonly IProductService _productService;
         private readonly IFileSaverService _fileSaverService;
-        
+
         public ObservableCollection<GroceryListItem> MyGroceryListItems { get; set; } = [];
         public ObservableCollection<Product> AvailableProducts { get; set; } = [];
+
+        [ObservableProperty]
+        string searchTerm;
+
+        public ObservableCollection<Product> FilteredProducts { get; set; } = [];
+
+        public IRelayCommand SearchCommand { get; }
 
         [ObservableProperty]
         GroceryList groceryList = new(0, "None", DateOnly.MinValue, "", 0);
@@ -35,7 +42,7 @@ namespace Grocery.App.ViewModels
             _groceryListItemsService = groceryListItemsService;
             _productService = productService;
             _fileSaverService = fileSaverService;
-            ListSearchCommand = new RelayCommand<string>(OnListSearch);
+
             Load(groceryList.Id);
         }
 
@@ -72,8 +79,29 @@ namespace Grocery.App.ViewModels
         {
             AvailableProducts.Clear();
             foreach (Product p in _productService.GetAll())
-                if (MyGroceryListItems.FirstOrDefault(g => g.ProductId == p.Id) == null  && p.Stock > 0)
+                if (MyGroceryListItems.FirstOrDefault(g => g.ProductId == p.Id) == null && p.Stock > 0)
                     AvailableProducts.Add(p);
+
+            FilterProducts(); 
+        }
+
+        private void FilterProducts()
+        {
+            FilteredProducts.Clear();
+            var filtered = string.IsNullOrWhiteSpace(SearchTerm)
+                ? AvailableProducts
+                : new ObservableCollection<Product>(
+                    AvailableProducts.Where(p => p.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
+                  );
+
+            foreach (var product in filtered)
+                FilteredProducts.Add(product);
+        }
+
+        private void OnSearch(string searchText)
+        {
+            SearchTerm = searchText;
+            FilterProducts();
         }
 
         partial void OnGroceryListChanged(GroceryList value)
@@ -87,6 +115,7 @@ namespace Grocery.App.ViewModels
             Dictionary<string, object> paramater = new() { { nameof(GroceryList), GroceryList } };
             await Shell.Current.GoToAsync($"{nameof(ChangeColorView)}?Name={GroceryList.Name}", true, paramater);
         }
+
         [RelayCommand]
         public void AddProduct(Product product)
         {
@@ -96,7 +125,8 @@ namespace Grocery.App.ViewModels
             product.Stock--;
             _productService.Update(product);
             AvailableProducts.Remove(product);
-            OnGroceryListChanged(GroceryList);
+            FilterProducts();
+            OnGroceryListChanged(GroceryList);      
         }
 
         [RelayCommand]
@@ -114,6 +144,5 @@ namespace Grocery.App.ViewModels
                 await Toast.Make($"Opslaan mislukt: {ex.Message}").Show(cancellationToken);
             }
         }
-
     }
 }
